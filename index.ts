@@ -170,14 +170,15 @@ export default ActionManger.actionManager;
 
 
 export async function GetPubKey(): Promise<string> {
-    return this.CallAppAction('', ActionName.GetPubKey, {});
+    return ActionManger.actionManager.CallAppAction('', ActionName.GetPubKey, {});
 }
 
 export async function Sign(data: Uint8Array): Promise<Uint8Array> {
-    return this.CallAppAction('', ActionName.Sign, {
+    return ActionManger.actionManager.CallAppAction('', ActionName.Sign, {
         data,
     });
 }
+
 
 export function Uint8Array2Base64(arr: Uint8Array) {
     return btoa(String.fromCharCode(...arr))
