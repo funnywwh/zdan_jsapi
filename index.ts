@@ -169,7 +169,7 @@ class ActionManger {
 export default ActionManger.actionManager;
 
 
-export async function GetPubKey(): Promise<string> {
+export async function GetPubKey(): Promise<Uint8Array> {
     return ActionManger.actionManager.CallAppAction('', ActionName.GetPubKey, {});
 }
 
