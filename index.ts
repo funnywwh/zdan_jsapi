@@ -7,6 +7,7 @@ enum ActionName {
     StartDMApp = "StartDMApp",
     GetPubKey = "GetPubKey",
     Sign = "Sign",
+    Authentication = "Authentication",
 }
 
 function postAction(args: {
@@ -194,6 +195,55 @@ export async function Sign(data: Uint8Array): Promise<Uint8Array> {
     });
 }
 
+enum AuthenticationType{
+    //企业认证
+    EnterpriseAuth = 2,
+    //个人认证
+    PersonAuth = 3,
+}
+interface AuthenticationPersonResult{
+    realName:string,
+    idNumber:string,
+    phone:string,
+    bank_name:string,
+    bank_num:string,
+}
+interface AuthenticationEnterpriseResult{
+    app_id:number,
+    area_code:string,
+    address:string,
+    business_scope:string,
+    created_at:string,
+    corporate_name:string,
+    legal_person:string,
+    legal_cert_id:string,
+    legal_cert_id_expires:string,
+    legal_mp: string,
+    mch_id: string,
+    message: string,
+    prov_code: string,
+    pic: string,
+    req_no: string,
+    social_credit_code: string,
+    social_credit_code_expires: string,
+    status: number,
+    settle_account_id: string,
+    up_status: number
+    updated_at: number
+    uid:number,
+    node_id:string,
+    initiator_code:string,
+    area_proxy: any,
+    area_name: string
+}
+/**
+ * 个人认证，或者企业认证
+ */
+export async function Authentication(type:AuthenticationType):Promise<AuthenticationPersonResult|AuthenticationEnterpriseResult> {
+    return ActionManger.actionManager.CallAppAction('', ActionName.Authentication, {
+        type,
+    });
+}
 
 export function Uint8Array2Base64(arr: Uint8Array) {
     return btoa(String.fromCharCode(...arr))
