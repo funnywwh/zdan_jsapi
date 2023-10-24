@@ -53,7 +53,7 @@ interface CallAppResp {
 }
 
 
-interface CallAppRespCallback {
+interface CallAppRespContext {
     ok: (args: any) => void
     failed: (err: any) => void
 }
@@ -110,13 +110,28 @@ class ActionManger {
                             UnloadSelf();
                         }
                     } break;
+                    case ActionName.CallAppResp: {
+                        let callAppResp: CallAppResp = action.args;
+                        if (callAppResp) {
+                            if (callAppResp.callId in this.callAppActionContextMap) {
+                                let ctx = this.callAppActionContextMap[callAppResp.callId];
+                                if (ctx) {
+                                    if (callAppResp.err) {
+                                        ctx.failed(callAppResp.err);
+                                    } else {
+                                        ctx.ok(callAppResp.result);
+                                    }
+                                }
+                            }
+                        }
+                    } break;
                 }
             }
         })
     }
     //CallApp promise 的callback
-    private callAppActionCallback: {
-        [key: number]: CallAppRespCallback
+    private callAppActionContextMap: {
+        [key: number]: CallAppRespContext
     } = {};
     //dmapp 注册的action
     dmappActionMap: {
@@ -148,7 +163,7 @@ class ActionManger {
                 action: action,
                 args: args,
             }
-            this.callAppActionCallback[callAppReq.callId] = {
+            this.callAppActionContextMap[callAppReq.callId] = {
                 ok, failed,
             }
             postAction({
