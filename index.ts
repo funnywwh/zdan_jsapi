@@ -195,20 +195,20 @@ export async function Sign(data: Uint8Array): Promise<Uint8Array> {
     });
 }
 
-enum AuthenticationType{
+export enum AuthenticationType{
     //企业认证
     EnterpriseAuth = 2,
     //个人认证
     PersonAuth = 3,
 }
-interface AuthenticationPersonResult{
+export interface AuthenticationPersonResult{
     realName:string,
     idNumber:string,
     phone:string,
     bank_name:string,
     bank_num:string,
 }
-interface AuthenticationEnterpriseResult{
+export interface AuthenticationEnterpriseResult{
     app_id:number,
     area_code:string,
     address:string,
