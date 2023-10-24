@@ -8,6 +8,7 @@ enum ActionName {
     GetPubKey = "GetPubKey",
     Sign = "Sign",
     Authentication = "Authentication",
+    Ping = "Ping"
 }
 
 function postAction(args: {
@@ -256,4 +257,12 @@ export function Base642Uint8Array(base64: string) {
         bytes[i] = binaryString.charCodeAt(i)
     }
     return bytes
+}
+
+declare var window:any;
+
+window.ActionPing = async ()=>{
+    let start = performance.now();
+    await ActionManger.actionManager.CallAppAction('',ActionName.Ping,{})
+    console.log(`ActionPing use:${performance.now() - start} ms`)
 }
