@@ -1,4 +1,5 @@
 import packageJson from '../../package.json'
+export const dmappId = packageJson.dmappId
 enum ActionName {
     UnloadSelf = "UnloadSelf",
     UnloadDMApp = "UnloadDMApp",
