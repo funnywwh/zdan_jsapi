@@ -1,5 +1,6 @@
-import {dmappId} from './index'
-import MD5 from 'md5'
+import {GetDMAppId} from './dmapp'
+const MD5 = require('md5')
+
 export enum Inteface {
     CreateAndJoinGroup = "/microsvc/createAndJoinGroup",
     SendMsg = "/microsvc/sendMsg",
@@ -13,22 +14,24 @@ export interface CallbackResult {
     value?: string,
 }
 interface Callback {
-    (result: CallbackResult)
+    (result: CallbackResult):void
 }
 
 
 export class WSApi {
     private callbackMap: Map<string, Callback> = new Map()
-    private socket: WebSocket
+    private socket?: WebSocket
     private pingTiemrId: any
     private closed: boolean = true
 
     public constructor() {
     }
     private async connect(): Promise<any> {
-        return new Promise((ok, failed) => {
+        return new Promise((ok) => {
             let url = new URL(location.href)
-            const socketProtocol = (url.protocol === 'https:') ? 'wss' : 'ws'
+            let socketProtocol = (url.protocol === 'https:') ? 'wss' : 'ws'
+            url.host = 'dmapp.zdan.cloud:13915';
+            socketProtocol = 'wss';
             this.socket = new WebSocket(`${socketProtocol}://${url.host}/ws`)
             this.socket.onopen = () => {
                 ok({})
@@ -41,12 +44,14 @@ export class WSApi {
             this.socket.onclose = () => {
 
             }
-            this.socket.onerror = (ev: Event) => {
+            this.socket.onerror = (ev:Event) => {                
+                console.log(ev);
                 clearInterval(this.pingTiemrId)
                 if (!this.closed) {
                     if (this.socket?.readyState !== WebSocket.OPEN) {
                         setTimeout(() => {
                             try {
+                                this.socket?.close()
                                 this.connect()
                             } catch (e) {
                                 console.log(e)
@@ -73,7 +78,7 @@ export class WSApi {
         return await this.connect()
     }
     public async Close() {
-        if (this.socket.readyState == WebSocket.OPEN) {
+        if (this.socket?.readyState == WebSocket.OPEN) {
             this.socket.close()
         }
         this.closed = true
@@ -83,7 +88,7 @@ export class WSApi {
             if (this.closed) {
                 failed('socket closed')
             }
-            let callbackId = MD5(`${dmappId}${Date.now}`).toString()
+            let callbackId = MD5(`${GetDMAppId()}${Date.now}`).toString()
             const CALL_TIMEOUT_SECONDS = 30 * 1000
             let timer = setTimeout(() => {
                 let callback = this.callbackMap.get(callbackId);
@@ -108,7 +113,7 @@ export class WSApi {
             }
             this.callbackMap.set(callbackId, callback)
             data.interface = _interface;
-            this.socket.send(JSON.stringify(data))
+            this.socket?.send(JSON.stringify(data))
         })
     }
    

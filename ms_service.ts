@@ -1,27 +1,32 @@
-import {dmappId} from './index'
-import { WSApi,Inteface } from "./ws_api";
+import { GetDMAppId } from './dmapp'
+import { WSApi, Inteface } from "./ws_api";
 
-export class MSService{
-    private wsapi:WSApi
-    private serviceName:string
-    private groupName:string
-    private groupId:string
-    public constructor(serviceName:string,groupName:string){
+
+export class MSService {
+    private wsapi: WSApi
+    private serviceName: string = ""
+    private groupName: string = ""
+    private groupId: string = ""
+    public constructor(serviceName: string, groupName: string) {
         this.wsapi = new WSApi()
         this.serviceName = serviceName
         this.groupName = groupName
+
     }
-    public async Open(data:any){
+    public async Open(data: any): Promise<string> {
         await this.wsapi.Open()
-        this.groupId = await this.CreateAndJoin(this.serviceName,this.groupName,data)
-        return 
+        this.groupId = await this.CreateAndJoin(this.serviceName, this.groupName, data)
+        return this.groupId
     }
-    public async Close(){
-        await this.LeaveGroup(this.serviceName,this.groupName)
+    public async Close() {
+        await this.LeaveGroup(this.serviceName, this.groupName)
         return this.wsapi.Close()
     }
-    public async Call(data:any):Promise<any>{
-        return this.SendMsg(data)
+    public async Call(name: string, args: any): Promise<any> {
+        return this.SendMsg({
+            name: name,
+            args: args,
+        })
     }
 
     private auth = () => {
@@ -36,13 +41,13 @@ export class MSService{
         }
         return ''
     }
-    async CreateAndJoin(serviceName: string, groupName: string, data: any): Promise<string> {
+    private async CreateAndJoin(serviceName: string, groupName: string, data: any): Promise<string> {
         interface Result {
             groupId: string,
         }
         let result: Result = await this.wsapi.Call(Inteface.CreateAndJoinGroup, {
-            cookie:this.auth(),
-            dmappIdHex: dmappId,
+            cookie: this.auth(),
+            dmappIdHex: GetDMAppId(),
             serviceName: serviceName,
             groupName: groupName,
             userInfo: data,
@@ -54,17 +59,17 @@ export class MSService{
     }
     async SendMsg(data: any): Promise<any> {
         let result = this.wsapi.Call(Inteface.SendMsg, {
-            dmappIdHex: dmappId,
+            dmappIdHex: GetDMAppId(),
             data: data,
         })
         return result;
     }
-    async LeaveGroup(serviceName: string, groupName: string): Promise<any> {
+    private async LeaveGroup(serviceName: string, groupName: string): Promise<any> {
         let result = this.wsapi.Call(Inteface.LeaveGroup, {
-            dmappIdHex: dmappId,
+            dmappIdHex: GetDMAppId(),
             serviceName: serviceName,
             groupName: groupName,
         })
         return result;
-    }    
+    }
 }
