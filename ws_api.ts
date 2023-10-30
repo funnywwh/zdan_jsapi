@@ -8,7 +8,7 @@ export enum Inteface {
 }
 
 export interface CallbackResult {
-    callbackId: string
+    callBackId: string
     code: number,
     describe?: string,
     value?: string,
@@ -63,7 +63,7 @@ export class WSApi {
             this.socket.onmessage = (ev: MessageEvent) => {
                 let result: CallbackResult = JSON.parse(ev.data)
                 if (result) {
-                    let callbackId = result.callbackId
+                    let callbackId = result.callBackId
                     let callback = this.callbackMap.get(callbackId)
                     if (callback) {
                         callback(result)
@@ -94,7 +94,7 @@ export class WSApi {
                 let callback = this.callbackMap.get(callbackId);
                 if (callback) {
                     callback({
-                        callbackId,
+                        callBackId:callbackId,
                         code: -1,
                         describe: `call timeout after ${CALL_TIMEOUT_SECONDS}`,
                     })
