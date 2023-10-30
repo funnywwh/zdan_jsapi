@@ -2,6 +2,7 @@
 export function init(dmappId:string){    
     DMAppId.dmappId = dmappId;
     console.log(`zdan_jsapi dmappId:${dmappId}`)
+    ActionManger.actionManager.init()
 }
 export function GetDMAppId():string{
     return DMAppId.dmappId
@@ -76,10 +77,12 @@ interface CallAppReqCallback {
 class ActionManger {
     static actionManager = new ActionManger();
     public constructor() {
+    }
+    public init(){
         let url = new URL(location.href);
         let startId = url.searchParams.get("startId");
         let fromDmappId = url.searchParams.get('fromDmappId');
-
+        
         if (startId && fromDmappId) {
             url.searchParams.delete("startId");
             url.searchParams.delete("fromDmappId");
@@ -170,7 +173,7 @@ class ActionManger {
     async CallAppAction(dmappId: string, action: string, args: any): Promise<any> {
         return new Promise<any>((ok, failed) => {
             let callAppReq: CallAppReq = {
-                fromDmappId: dmappId,
+                fromDmappId: DMAppId.dmappId,
                 toDmappId: dmappId,
                 callId: Date.now(),
                 action: action,

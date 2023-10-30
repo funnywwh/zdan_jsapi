@@ -113,6 +113,7 @@ export class WSApi {
             }
             this.callbackMap.set(callbackId, callback)
             data.interface = _interface;
+            data.callBackId = callbackId;
             this.socket?.send(JSON.stringify(data))
         })
     }

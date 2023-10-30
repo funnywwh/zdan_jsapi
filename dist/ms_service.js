@@ -31,16 +31,19 @@ export class MSService {
             configurable: true,
             writable: true,
             value: () => {
-                const cookies = document.cookie.split(';');
-                for (const cookie of cookies) {
-                    const [name, value] = cookie.trim().split('=');
-                    if (name === 'auth') {
-                        if (value.length === 40) {
-                            return value;
-                        }
-                    }
-                }
-                return '';
+                // const cookies = document.cookie.split(';')
+                // for (const cookie of cookies) {
+                //     const [name, value] = cookie.trim().split('=')
+                //     if (name === 'auth') {
+                //         if (value.length === 40) {
+                //             return value
+                //         }
+                //     }
+                // }
+                // return ''
+                let url = new URL(location.href);
+                let auth = url.searchParams.get('auth');
+                return auth;
             }
         });
         this.wsapi = new WSApi();
